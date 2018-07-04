@@ -1,0 +1,215 @@
+Actividad 31 - Postgresql
+En esta actividad trabajaremos con las diferentes queries desde el terminal de postgres.
+Para desarrollar esta actividad, tendrán que anotar cada una de las queries que utilizaron en un archivo txt y subir este archivo a la plataforma.
+Deben también ingresar, al final de este archivo, el nombre de los integrantes del grupo que participaron en el desarrollo de esta actividad.
+Ejercicio 1
+Crear base de datos en base a los requerimientos enviados por el cliente.
+
+    Crear una base de datos llamada call_list
+
+    En la base de datos recien creada, crear la tabla users con los campos id (clave primaria), first_name, email.
+
+    Ingresar un usuario, llamado Carlos (el resto de los datos deben inventarlos).
+
+    Ingresar un usuario, llamada Laura (el resto de los datos deben inventarlos).
+
+    Crear una tabla llamada calls con los campos id (clave primaria), phone, date, user_id (foreign key relacionado a users).
+
+    Agregar a la tabla users el campo last_name.
+
+    Ingresar el apellido del usuario Carlos.
+
+    Ingresar el apellido del usuario Laura.
+
+    Ingresar 6 llamadas asociadas al usuario Laura.
+
+    Ingresar 4 llamadas asociadas al usuario Carlos.
+
+    Crear un nuevo usuario.
+
+    Seleccionar la cantidad de llamados de cada uno de los usuarios (nombre de usuario y cantidad de llamadas).
+
+    Seleccionar los llamados del usuario llamado Carlos ordenados por fecha en orden descendente.
+
+        Nuevos cambios solicitados por cliente.
+
+        "Necesito agregar a la base una tabla de auditoría que registre el motivo del borrado de una llamada y el usuario que lo efectuó."
+
+    A partir de la base anterior, agregar este requerimiento y modelar la base de datos (agregar print de pantalla [utilizar https://www.draw.io/]).
+
+---------------------------------------------------------------------------------------------------------------------------
+
+enzo=# CREATE DATABASE call_list;
+CREATE DATABASE
+
+enzo=# \c call_list
+You are now connected to database "call_list" as user "enzo".
+
+call_list=# CREATE TABLE users (id integer primary key, first_name varchar(40), email varchar(40));
+CREATE TABLE
+
+call_list=# INSERT INTO users (id, first_name, email) VALUES (1,'Carlos','carlos@persona.com');
+INSERT 0 1
+
+call_list=# INSERT INTO users (id, first_name, email) VALUES (2,'Laura','laura@persona.com');
+INSERT 0 1
+
+call_list=# CREATE TABLE calls (id integer primary key, phone varchar (15), date date, user_id integer references users);  
+CREATE TABLE
+
+call_list=# ALTER TABLE users ADD COLUMN last_name varchar(40);
+ALTER TABLE
+
+call_list=# UPDATE users SET last_name = 'Pinto' WHERE first_name = 'Carlos';
+UPDATE 1
+
+call_list=# UPDATE users SET last_name = 'Tapia' WHERE first_name = 'Laura';
+UPDATE 1
+
+##EJERCICIOS
+
+call_list=# SELECT first_name FROM users ORDER BY first_name ASC;
+ first_name 
+------------
+ Carlos
+ Laura
+(2 rows)
+
+call_list=# SELECT * FROM users WHERE id = 2;
+ id | first_name |       email       | last_name 
+----+------------+-------------------+-----------
+  2 | Laura      | laura@persona.com | Tapia
+(1 row)
+
+call_list=# SELECT * FROM users WHERE first_name LIKE '%L%';
+ id | first_name |       email       | last_name 
+----+------------+-------------------+-----------
+  2 | Laura      | laura@persona.com | Tapia
+(1 row)
+
+call_list=# SELECT * FROM users WHERE last_name LIKE '%T%';
+ id | first_name |       email       | last_name 
+----+------------+-------------------+-----------
+  2 | Laura      | laura@persona.com | Tapia
+(1 row)
+
+call_list=# SELECT * FROM users WHERE email LIKE '%ra@persona.com';
+ id | first_name |       email       | last_name 
+----+------------+-------------------+-----------
+  2 | Laura      | laura@persona.com | Tapia
+(1 row)
+
+
+call_list=# SELECT * FROM users WHERE email iLIKE '%LAURA@persona.com';
+ id | first_name |       email       | last_name 
+----+------------+-------------------+-----------
+  2 | Laura      | laura@persona.com | Tapia
+(1 row)
+
+call_list=# SELECT * FROM users WHERE id = 1;
+ id | first_name |       email        | last_name 
+----+------------+--------------------+-----------
+  1 | Carlos     | carlos@persona.com | Pinto
+(1 row)
+
+call_list=# SELECT * FROM users WHERE first_name LIKE '%C%';
+ id | first_name |       email        | last_name 
+----+------------+--------------------+-----------
+  1 | Carlos     | carlos@persona.com | Pinto
+(1 row)
+
+call_list=# SELECT * FROM users WHERE last_name LIKE '%P%';
+ id | first_name |       email        | last_name 
+----+------------+--------------------+-----------
+  1 | Carlos     | carlos@persona.com | Pinto
+(1 row)
+
+call_list=# SELECT * FROM users WHERE email iLIKE '%LOS@persona.com';
+ id | first_name |       email        | last_name 
+----+------------+--------------------+-----------
+  1 | Carlos     | carlos@persona.com | Pinto
+(1 row)
+
+##
+
+call_list=# INSERT INTO calls VALUES (1,45465989,'2017-02-10',1);
+INSERT 0 1
+
+call_list=# INSERT INTO calls VALUES (2,45465989,'2014-02-10',1);
+INSERT 0 1
+
+call_list=# INSERT INTO calls VALUES (3,45465989,'2015-04-10',1);
+INSERT 0 1
+
+call_list=# INSERT INTO calls VALUES (4,45465989,'2015-04-12',1);
+INSERT 0 1
+
+call_list=# INSERT INTO calls VALUES (5,23435959,'2015-04-12',2);
+INSERT 0 1
+
+call_list=# INSERT INTO calls VALUES (6,23435959,'2011-04-12',2);
+INSERT 0 1
+
+call_list=# INSERT INTO calls VALUES (7,23435959,'2018-04-11',2);
+INSERT 0 1
+
+call_list=# INSERT INTO calls VALUES (8,23435959,'2014-02-11',2);
+INSERT 0 1
+
+call_list=# INSERT INTO calls VALUES (9,23435959,'2014-02-11',1);
+INSERT 0 1
+
+call_list=# INSERT INTO calls VALUES (10,23435959,'2017-02-10',1);
+INSERT 0 1
+
+call_list=# SELECT * FROM calls;
+ id |  phone   |    date    | user_id 
+----+----------+------------+---------
+  1 | 45465989 | 2017-02-10 |       1
+  2 | 45465989 | 2014-02-10 |       1
+  3 | 45465989 | 2015-04-10 |       1
+  4 | 45465989 | 2015-04-12 |       1
+  5 | 23435959 | 2015-04-12 |       2
+  6 | 23435959 | 2011-04-12 |       2
+  7 | 23435959 | 2018-04-11 |       2
+  8 | 23435959 | 2014-02-11 |       2
+  9 | 23435959 | 2014-02-11 |       1
+ 10 | 23435959 | 2017-02-10 |       1
+(10 rows)
+
+call_list=# INSERT INTO users VALUES (3,'Pedro','Picapiedra');
+INSERT 0 1
+
+call_list=# SELECT users.first_name, count (*) FROM users,calls WHERE users.id = calls.user_id GROUP BY users.id;
+ first_name | count 
+------------+-------
+ Carlos     |     6
+ Laura      |     4
+(2 rows)
+
+call_list=# SELECT calls.date FROM users,calls WHERE users.id = 1 ORDER BY date DESC;
+    date    
+------------
+ 2018-04-11
+ 2017-02-10
+ 2017-02-10
+ 2015-04-12
+ 2015-04-12
+ 2015-04-10
+ 2014-02-11
+ 2014-02-11
+ 2014-02-10
+ 2011-04-12
+(10 rows)
+
+call_list=# CREATE TABLE auditoria (id integer primary key, motivo varchar(100),call_id integer references calls);
+CREATE TABLE
+
+call_list=# INSERT INTO auditoria VALUES (1,'caso solucionado',1);
+INSERT 0 1
+
+call_list=# SELECT * FROM auditoria;
+ id |      motivo      | call_id 
+----+------------------+---------
+  1 | caso solucionado |       1
+(1 row)
